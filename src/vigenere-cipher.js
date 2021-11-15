@@ -20,12 +20,48 @@ import { NotImplementedError } from '../extensions/index.js';
  * 
  */
 export default class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor (direct = true) {
+    this.direct = direct;
+    this.abcArray = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  coder(string, key, status) {
+    string = string.toUpperCase();
+    key = key.toUpperCase();
+
+    let newString = '';
+    let k = 0;
+    let index;
+    for (let i = 0; i < string.length; i++) {
+      if (this.abcArray.includes(string[i])) {
+        if (k >= key.length) {
+          k = k % key.length;
+        }
+        if (status) {
+          index = (this.abcArray.indexOf(string[i]) + this.abcArray.indexOf(key[k])) % 26;
+          newString += this.abcArray[index];
+          k++;
+        } else {
+          index = (26 + this.abcArray.indexOf(string[i]) - this.abcArray.indexOf(key[k])) % 26;
+          newString += this.abcArray[index];
+          k++;
+        }
+      } else {
+          newString += string[i];
+        }
+    }
+    if (this.direct == false) {newString = newString.split('').reverse().join('')}
+    return newString;
+  }
+  encrypt(string, key) {
+    if (string === undefined || key === undefined) {
+      throw new Error('Incorrect arguments!');
+    }
+    return this.coder(string, key, true);
+  }
+  decrypt(string, key) {
+    if (string === undefined || key === undefined) {
+      throw new Error('Incorrect arguments!');
+    }
+    return this.coder(string, key, false);
   }
 }
